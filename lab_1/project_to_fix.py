@@ -1,4 +1,9 @@
+import time
+import random
+
 import pygame
+
+
 pygame.init()
 gray=(119,118,110)
 black=(0,0,0)
@@ -10,8 +15,7 @@ bright_green=(0,255,0)
 bright_blue=(0,0,255)
 display_width=800
 display_height=600
-import time
-import random
+
 
 
 gamedisplays=pygame.display.set_mode((display_width,display_height))
