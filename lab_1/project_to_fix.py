@@ -368,7 +368,10 @@ def game_loop():
                 pygame.display.update()
                 time.sleep(3)
         if y < obs_starty + obs_height:
-            if x > obs_startx and x < obs_startx + obs_width or x + CAR_WIDTH > obs_startx and x + CAR_WIDTH < obs_startx + obs_width:
+            if (x > obs_startx and
+                x < obs_startx + obs_width or
+                x + CAR_WIDTH > obs_startx and
+                x + CAR_WIDTH < obs_startx + obs_width):
                 crash()
         button("Pause", 650, 0, 150, 50, BLUE, BRIGHT_BLUE, "pause")
         pygame.display.update()
