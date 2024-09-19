@@ -7,7 +7,6 @@ from constants import (GRAY, BLACK, RED, GREEN,
                        BLUE, BRIGHT_RED, BRIGHT_GREEN,
                        BRIGHT_BLUE, DISPLAY_WIDTH, DISPLAY_HEIGHT, CAR_WIDTH)
 
-
 gamedisplays = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 pygame.display.set_caption("car game")
 clock = pygame.time.Clock()
