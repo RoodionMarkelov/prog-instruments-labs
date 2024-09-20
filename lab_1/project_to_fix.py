@@ -1,5 +1,6 @@
 import time
 import random
+from typing import Any
 
 import pygame
 
@@ -43,7 +44,7 @@ def intro_loop():
         clock.tick(50)
 
 
-def button(msg, x, y, w, h, ic, ac, action=None):
+def button(msg: Any, x: float, y: float, w: float, h: float, ic: float, ac: float, action=None):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
     if x + w > mouse[0] > x and y + h > mouse[1] > y:
@@ -212,7 +213,7 @@ def countdown():
         game_loop()
 
 
-def obstacle(obs_startx, obs_starty, obs):
+def obstacle(obs_startx: Any, obs_starty: Any, obs: Any):
     if obs == 0:
         obs_pic = pygame.image.load("car.jpg")
     elif obs == 1:
@@ -230,7 +231,7 @@ def obstacle(obs_startx, obs_starty, obs):
     gamedisplays.blit(obs_pic, (obs_startx, obs_starty))
 
 
-def score_system(passed, score):
+def score_system(passed: Any, score: Any):
     font = pygame.font.SysFont(None, 25)
     text = font.render("Passed" + str(passed), True, BLACK)
     score = font.render("Score" + str(score), True, RED)
@@ -238,12 +239,12 @@ def score_system(passed, score):
     gamedisplays.blit(score, (0, 30))
 
 
-def text_objects(text, font):
+def text_objects(text: str, font: Any):
     textsurface = font.render(text, True, BLACK)
     return textsurface, textsurface.get_rect()
 
 
-def message_display(text):
+def message_display(text: str):
     largetext = pygame.font.Font("freesansbold.ttf", 80)
     textsurf, textrect = text_objects(text, largetext)
     textrect.center = ((DISPLAY_WIDTH / 2), (DISPLAY_HEIGHT / 2))
@@ -278,7 +279,7 @@ def background():
     gamedisplays.blit(strip, (680, 200))
 
 
-def car(x, y):
+def car(x: float, y: float):
     gamedisplays.blit(carimg, (x, y))
 
 
