@@ -20,11 +20,19 @@ instruction_background = pygame.image.load("background2.jpg")
 pause = False
 
 
-def programm_inicialization():
+def programm_inicialization() -> object:
+    """
+    Функция для инициализации программы.
+    Возвращает объект.
+    """
     pygame.init()
 
 
-def intro_loop():
+def intro_loop() -> object:
+    """
+    Функция выполняет вступительный цикл программы.
+    Возвращает объект.
+    """
     intro = True
     while intro:
         for event in pygame.event.get():
@@ -44,7 +52,20 @@ def intro_loop():
         clock.tick(50)
 
 
-def button(msg: Any, x: float, y: float, w: float, h: float, ic: float, ac: float, action=None):
+def button(msg: Any, x: float, y: float, w: float, h: float, ic: Any, ac: Any, action: object = None) -> object:
+    """
+    Функция для взаимодействия с кнопками. Рассчитывает координаты кнопки и
+    выводит текст при наведении или выполняет определенное действие при клике.
+    :param msg: сообщение
+    :param x: координата по горизонтали
+    :param y: координата по вертикали
+    :param w: ширины кнопки
+    :param h: высота кнопки
+    :param ic: параметр
+    :param ac: параметр
+    :param action: код действия
+    Возвращает объект.
+    """
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
     if x + w > mouse[0] > x and y + h > mouse[1] > y:
@@ -72,7 +93,10 @@ def button(msg: Any, x: float, y: float, w: float, h: float, ic: float, ac: floa
     gamedisplays.blit(textsurf, textrect)
 
 
-def introduction():
+def introduction() -> object:
+    """
+    Функция вызова начальнго экрана.
+    """
     introduction = True
     while introduction:
         for event in pygame.event.get():
@@ -113,7 +137,10 @@ def introduction():
         clock.tick(30)
 
 
-def paused():
+def paused() -> object:
+    """
+    Функция вызова паузы.
+    """
     global pause
     while pause:
         for event in pygame.event.get():
@@ -133,12 +160,18 @@ def paused():
         clock.tick(30)
 
 
-def unpaused():
+def unpaused() -> object:
+    """
+    Функция убирает паузу.
+    """
     global pause
     pause = False
 
 
-def countdown_background():
+def countdown_background() -> object:
+    """
+    Функция ведет подсчет очков за игру.
+    """
     font = pygame.font.SysFont(None, 25)
     x = (DISPLAY_WIDTH * 0.45)
     y = (DISPLAY_HEIGHT * 0.8)
@@ -170,7 +203,10 @@ def countdown_background():
     button("PAUSE", 650, 0, 150, 50, BLUE, BRIGHT_BLUE, "pause")
 
 
-def countdown():
+def countdown() -> object:
+    """
+    Функция вызывает обратный отстчет до начала игры.
+    """
     countdown = True
     while countdown:
         for event in pygame.event.get():
@@ -213,7 +249,13 @@ def countdown():
         game_loop()
 
 
-def obstacle(obs_startx: Any, obs_starty: Any, obs: Any):
+def obstacle(obs_startx: float, obs_starty: float, obs: Any) -> object:
+    """
+    Функция создает случной препятсвие в виде машины случайного цвета и формы.
+    :param obs_startx: начальная координата x для препятствия
+    :param obs_starty: начальная координата y для препятствия
+    :param obs: случайное значение для выбора машины-препятствия
+    """
     if obs == 0:
         obs_pic = pygame.image.load("car.jpg")
     elif obs == 1:
@@ -231,7 +273,13 @@ def obstacle(obs_startx: Any, obs_starty: Any, obs: Any):
     gamedisplays.blit(obs_pic, (obs_startx, obs_starty))
 
 
-def score_system(passed: Any, score: Any):
+def score_system(passed: Any, score: int) -> object:
+    """
+    Функция подсчитывает пройденный путь игроком и количество очков,
+    накопленных игроком.
+    :param passed: пройденный путь
+    :param score: очки накопленные за игру
+    """
     font = pygame.font.SysFont(None, 25)
     text = font.render("Passed" + str(passed), True, BLACK)
     score = font.render("Score" + str(score), True, RED)
@@ -239,12 +287,22 @@ def score_system(passed: Any, score: Any):
     gamedisplays.blit(score, (0, 30))
 
 
-def text_objects(text: str, font: Any):
+def text_objects(text: str, font: Any) -> tuple:
+    """
+    Функция отображает текстовые объекты.
+    :param text: текст объекта
+    :param font: шрифт текста
+    :return: tuple[font.render(text, True, BLACK), font.render(text, True, BLACK)]
+    """
     textsurface = font.render(text, True, BLACK)
     return textsurface, textsurface.get_rect()
 
 
-def message_display(text: str):
+def message_display(text: str) -> object:
+    """
+    Функция вызова дисплея с сообщением.
+    :param text: сообщение
+    """
     largetext = pygame.font.Font("freesansbold.ttf", 80)
     textsurf, textrect = text_objects(text, largetext)
     textrect.center = ((DISPLAY_WIDTH / 2), (DISPLAY_HEIGHT / 2))
@@ -254,11 +312,17 @@ def message_display(text: str):
     game_loop()
 
 
-def crash():
+def crash() -> object:
+    """
+    Функция выводит сообщение о крушение автомобиля. то есть конца игры.
+    """
     message_display("YOU CRASHED")
 
 
-def background():
+def background() -> object:
+    """
+    Функция отоброжает задний фон игры.
+    """
     gamedisplays.blit(backgroundpic, (0, 0))
     gamedisplays.blit(backgroundpic, (0, 200))
     gamedisplays.blit(backgroundpic, (0, 400))
@@ -279,11 +343,19 @@ def background():
     gamedisplays.blit(strip, (680, 200))
 
 
-def car(x: float, y: float):
+def car(x: float, y: float) -> object:
+    """
+    Функция вычисляет координаты автомобиля игрока.
+    :param x: координата x автомобиля игрока
+    :param y: координата y автомобиля игрока
+    """
     gamedisplays.blit(carimg, (x, y))
 
 
-def game_loop():
+def game_loop() -> object:
+    """
+    Функция запускает игровой цикл.
+    """
     global pause
     x = (DISPLAY_WIDTH * 0.45)
     y = (DISPLAY_HEIGHT * 0.8)
