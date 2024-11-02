@@ -7,11 +7,6 @@ import hashlib
 from typing import List
 
 from constants import PATH_TO_JSON_FILE, PATH_TO_CSV_FILE, VARIANT
-from lab_3.constants import VARIANT
-
-"""
-В этом модуле обитают функции, необходимые для автоматизированной проверки результатов ваших трудов.
-"""
 
 
 def calculate_checksum(row_numbers: List[int]) -> str:
