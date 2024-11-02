@@ -1,6 +1,10 @@
+import re
+import pandas as pd
 import json
 import hashlib
 from typing import List
+
+from paths import PATH_TO_JSON_FILE, PATH_TO_CSV_FILE
 
 """
 В этом модуле обитают функции, необходимые для автоматизированной проверки результатов ваших трудов.
@@ -38,9 +42,55 @@ def serialize_result(variant: int, checksum: str) -> None:
     :param variant: номер вашего варианта
     :param checksum: контрольная сумма, вычисленная через calculate_checksum()
     """
-    pass
+    try:
+        with open(PATH_TO_JSON_FILE, "r") as f:
+            result_data = json.load(f)
+
+        result_data["variant"] = variant
+        result_data["checksum"] = checksum
+
+        with open(PATH_TO_JSON_FILE, "w") as f:
+            f.write(json.dumps(result_data))
+
+    except Exception as e:
+        print(f"Произошла ошибка при обновлении файла: {e}")
+
+
+def process() -> None:
+    parameters = {
+        'telephone': r"^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$",
+        'height': r"^[1-2]\.\d{2}$",
+        'inn': r"^\d{12}$",
+        'identifier': r"^\d{2}-\d{2}\/\d{2}$",
+        'occupation': r"^[a-zA-Zа-яА-ЯёЁ\s-]+",
+        'latitude': r"^[+-]?(90\.0|0\.0|[0-8]?\d\.\d{6})$",
+        'blood_type': r"^(AB?|B|O)(\+|\-)$",
+        'issn': r"^\d{4}-\d{4}$",
+        'uuid': r"^[a-z0-9]{8}-([a-f0-9]{4}-){3}[a-z0-9]{12}$",
+        'date': r"(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])"
+    }
+
+    try:
+        data = pd.read_csv(PATH_TO_CSV_FILE, encoding='utf-16', sep=';', header=0)
+    except Exception as e:
+        print(f"Произошла ошибка при обновлении файла: {e}")
+
+    data.columns = ["telephone", "height", "inn", "identifier", "occupation", "latitude", "blood_type", "issn",
+                    "uuid", "date"]
+
+    errors = []
+
+    for index, row in data.iterrows():
+        row_has_error = False
+        for col, pattern in parameters.items():
+            if not re.match(pattern, str(row[col])):
+                row_has_error = True
+                break
+        if row_has_error:
+            errors.append(index)
+
+    print(errors)
 
 
 if __name__ == "__main__":
-    print(calculate_checksum([1, 2, 3]))
-    print(calculate_checksum([3, 2, 1]))
+    process()
