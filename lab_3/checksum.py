@@ -28,7 +28,6 @@ def serialize_result(variant: int, checksum: str) -> None:
     """
     try:
         absolute_path_to_json = os.path.abspath(os.getcwd()) + PATH_TO_JSON_FILE
-        print(absolute_path_to_json)
         with open(absolute_path_to_json, "r") as f:
             result_data = json.load(f)
 
@@ -40,6 +39,19 @@ def serialize_result(variant: int, checksum: str) -> None:
 
     except Exception as e:
         print(f"Произошла ошибка в функции serialize_result: {e}")
+
+
+def read_csv(file_name: str) -> pd.DataFrame:
+    """
+    Функция считывает данные из CSV-файла по ссылке file_name и возвращяет данные в виде pd.DataFrame
+    :param file_name: ссылка на CSV-файл
+    :return pd.DataFrame: данные в виде таблицы Pandas
+    """
+    try:
+        data = pd.read_csv(file_name, encoding='utf-16', sep=';', header=0)
+        return data
+    except Exception as e:
+        print(f"Произошла ошибка в функции process: {e}")
 
 
 def process(csv_file: str) -> List[int]:
@@ -62,10 +74,7 @@ def process(csv_file: str) -> List[int]:
         'date': r"(19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])"
     }
 
-    try:
-        data = pd.read_csv(csv_file, encoding='utf-16', sep=';', header=0)
-    except Exception as e:
-        print(f"Произошла ошибка в функции process: {e}")
+    data = read_csv(csv_file)
 
     data.columns = ["telephone", "height", "inn", "identifier", "occupation", "latitude", "blood_type", "issn",
                     "uuid", "date"]
@@ -93,7 +102,6 @@ def main() -> None:
     :return:
     """
     absolute_path_to_csv = os.path.abspath(os.getcwd()) + PATH_TO_CSV_FILE
-    print(absolute_path_to_csv)
     rows_index = process(absolute_path_to_csv)
     checksum = calculate_checksum(rows_index)
     serialize_result(VARIANT, checksum=checksum)
