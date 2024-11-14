@@ -1,5 +1,6 @@
 import sys
 import os
+import logging
 
 from PyQt5.QtWidgets import (
     QMainWindow,
@@ -50,6 +51,9 @@ class Window(QMainWindow):
             cryptosystem - криптосистема
         """
         super().__init__()
+
+        self.logger = self.create_logger()
+        self.logger.info("Пользователь вошел в систему")
 
         self.cryptosystem = None
 
@@ -137,6 +141,20 @@ class Window(QMainWindow):
 
         self.show()
 
+    def create_logger(self):
+        logger = logging.getLogger("Event")
+        logger.setLevel(logging.DEBUG)
+
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.DEBUG)
+
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
+
+        return logger
+
     def load_default_files(self) -> None:
         """
         Метод загружает текстовые файлы из json файла.
@@ -158,9 +176,6 @@ class Window(QMainWindow):
                 self.symmetric_key = absolute_path + symmetric_key
                 self.public_key = absolute_path + public_key
                 self.private_key = absolute_path + private_key
-                number_of_bits = int(self.find())
-                self.cryptosystem = Cryptosystem(number_of_bits)
-                self.messagelabel.setText("Система по умолчанию создана.")
                 self.messagelabel.adjustSize()
         except FileNotFoundError:
             print("Один из файлов не найден.")
@@ -177,12 +192,14 @@ class Window(QMainWindow):
         center = QDesktopWidget().availableGeometry().center()
         location.moveCenter(center)
         self.move(location.topLeft())
+        return
 
     def get_file(self) -> str:
         """
         Метод возвращает путь до файла, выбранным пользователем.
         @return file_name: путь до выбранного файла.
         """
+        logging.info("Пользователь выбрал файл")
         folderpath = QFileDialog.getExistingDirectory(self, "Выберете папку")
         file_name = QFileDialog.getOpenFileName(
             self, "Выберете файл", folderpath
@@ -194,11 +211,14 @@ class Window(QMainWindow):
         Метод инициализирует криптосистему для класса.
         """
         try:
+            self.logger.info("Пользователь инициализировал криптосистему")
             number_of_bits = int(self.find())
             self.cryptosystem = Cryptosystem(number_of_bits)
             self.messagelabel.setText("Система создана.")
             self.messagelabel.adjustSize()
+            return
         except Exception as e:
+            logging.warning("Произошла ошибка в создании криптосистемы")
             print(f"Произошла ошибка: {e}")
             raise
 
@@ -227,41 +247,51 @@ class Window(QMainWindow):
         Метод генерирует ключи для криптосистемы.
         """
         if not self.cryptosystem:
+            self.logger.info("Пользователь попытался сгенерировать ключи для несуществующей криптосистемы")
             self.messagelabel.setText("Для начала создайте криптосистему!")
             self.messagelabel.adjustSize()
             return
+        self.logger.info("Пользователь сгенерировал ключи для криптосистемы")
         self.cryptosystem.generate_keys(self.symmetric_key, self.public_key, self.private_key)
         self.messagelabel.setText("Ключи созданы.")
         self.messagelabel.adjustSize()
+        return
 
     def encrypt_text(self) -> None:
         """
         Метод шифрует текст с помомщью криптосистемы.
         """
         if not self.cryptosystem:
+            self.logger.info("Пользователь попытался зашифровать текст без криптосистемы")
             self.messagelabel.setText("Для начала создайте криптосистему!")
             self.messagelabel.adjustSize()
             return
+        self.logger.info("Пользователь зашифровал текст")
         self.cryptosystem.encrypt(self.text, self.symmetric_key, self.private_key, self.encrypted_file)
         self.messagelabel.setText("Текст зашифрован.")
         self.messagelabel.adjustSize()
+        return
 
     def decrypt_text(self) -> None:
         """
         Метод дешифрует тест с помощью криптосистемы.
         """
         if not self.cryptosystem:
+            self.logger.info("Пользователь попытался дешифровать текст без криптосистемы")
             self.messagelabel.setText("Для начала создайте криптосистему!")
             self.messagelabel.adjustSize()
             return
+        self.logger.info("Пользователь дешифровал зашифрованный текст")
         self.cryptosystem.decrypt(self.encrypted_file, self.symmetric_key, self.private_key, self.decrypted_file)
         self.messagelabel.setText("Текст дешифрован.")
+        return
 
     def generate_keys_for_user(self):
         """
         Метод генерирует ключи в пользовательские файлы.
         """
         if not self.cryptosystem:
+            self.logger.info("Пользователь попытался сгенерировать ключи для несуществующей криптосистемы")
             self.messagelabel.setText("Для начала создайте криптосистему!")
             self.messagelabel.adjustSize()
             return
@@ -269,19 +299,22 @@ class Window(QMainWindow):
         user_public_key = self.get_file()
         user_private_key = self.get_file()
         if user_symmetric_key and user_public_key and user_private_key:
+            self.logger.info("Пользователь сгенерировал ключи в свои файлы")
             self.cryptosystem.generate_keys(user_symmetric_key, user_public_key, user_private_key)
             self.messagelabel.setText("Ключи созданы.")
             self.messagelabel.adjustSize()
         else:
+            self.logger.info("Пользователь попытался сгенерировать ключи в свои файлы, однако выбраны не все файлы")
             self.messagelabel.setText("Ключи не созданы! Укажите все файлы.")
             self.messagelabel.adjustSize()
-            return
+        return
 
     def encrypt_user_text(self):
         """
         Метод шифрует пользовательсктй текст.
         """
         if not self.cryptosystem:
+            self.logger.info("Пользователь попытался зашифровать свой текст без криптосистемы")
             self.messagelabel.setText("Для начала создайте криптосистему!")
             self.messagelabel.adjustSize()
             return
@@ -290,19 +323,22 @@ class Window(QMainWindow):
         user_private_key = self.get_file()
         user_save_text = self.get_file()
         if user_text and user_symmetric_key and user_private_key and user_save_text:
+            self.logger.info("Пользователь зашифровал свой текст")
             self.cryptosystem.encrypt(user_text, user_symmetric_key, user_private_key, user_save_text)
             self.messagelabel.setText("Текст зашифрован.")
             self.messagelabel.adjustSize()
         else:
+            self.logger.info("Пользователь попытался зашифровать свой текст, однако выбраны не все файлы")
             self.messagelabel.setText("Выберите все файлы.")
             self.messagelabel.adjustSize()
-            return
+        return
 
     def decrypt_user_text(self) -> None:
         """
         Метод дешифрует пользовательсктй текст.
         """
         if not self.cryptosystem:
+            self.logger.info("Пользователь попытался дешифровать текст без криптосистемы")
             self.messagelabel.setText("Для начала создайте криптосистему!")
             self.messagelabel.adjustSize()
             return
@@ -311,13 +347,15 @@ class Window(QMainWindow):
         user_private_key = self.get_file()
         user_save_text = self.get_file()
         if user_encrypted_text and user_symmetric_key and user_private_key and user_save_text:
+            self.logger.info("Пользователь дешифровал свой текст")
             self.cryptosystem.decrypt(user_encrypted_text, user_symmetric_key, user_private_key, user_save_text)
             self.messagelabel.setText("Текст разшифрован.")
             self.messagelabel.adjustSize()
         else:
+            self.logger.info("Пользователь попытался дешифровать свой текст, однако не все файлы были выбраны")
             self.messagelabel.setText("Выберите все файлы.")
             self.messagelabel.adjustSize()
-            return
+        return
 
     def _quit(self) -> None:
         """Получение MessageBox для выхода"""
@@ -329,6 +367,7 @@ class Window(QMainWindow):
             QMessageBox.No,
         )
         if reply == QMessageBox.Yes:
+            self.logger.info("Пользователь вышел из приложения")
             QApplication.instance().quit()
         else:
             return
